@@ -1,0 +1,410 @@
+JAVA BASICS CHEAT SHEET (1-6)
+For VTG / Nightwing Software Engineer prep
+
+Ask in the interview: "What's the stack: Java version, Spring Boot, Maven or Gradle, and which database?"
+VS Code: install "Extension Pack for Java" and "Spring Boot Extension Pack" (both free).
+
+====================================
+1. OOP FUNDAMENTALS
+====================================
+- Class = a blueprint. Object = one thing built from it.
+- Encapsulation = keep fields private, expose them through methods.
+- Interface = a contract listing methods a class promises to have.
+- Inheritance = one class "extends" another and gets its code.
+- static = belongs to the class itself, shared by every object.
+- Access modifiers: public (anyone), private (this class only), protected (subclasses).
+
+// each class goes in its own .java file
+public interface Testable {
+    boolean runTest();
+}
+
+public class Ticket {
+    private String title;            // encapsulated
+    private static int count = 0;    // shared by ALL tickets
+
+    public Ticket(String title) { this.title = title; count++; }
+    public String getTitle() { return title; }
+    public static int getCount() { return count; }
+}
+
+public class BugTicket extends Ticket implements Testable {
+    public BugTicket(String title) { super(title); }
+    @Override
+    public boolean runTest() { return true; }
+}
+
+Ticket t = new BugTicket("Login fails");   // object
+
+====================================
+2. COLLECTIONS
+====================================
+- List = ordered, allows duplicates.
+- Map = key -> value pairs.
+- Set = no duplicates.
+- Generics <String> = this collection only holds Strings.
+
+List<String> names = new ArrayList<>();
+names.add("Kevin");
+names.get(0);                  // "Kevin"
+
+Map<String, Integer> bugs = new HashMap<>();
+bugs.put("login", 3);
+bugs.get("login");             // 3
+
+Set<String> tags = new HashSet<>();
+tags.add("urgent");
+tags.add("urgent");            // stored only once
+
+for (String n : names) {
+    System.out.println(n);
+}
+
+====================================
+3. EXCEPTIONS
+====================================
+- Exception = an error while the code runs. "try" catches it so the program doesn't crash.
+- finally = always runs, error or not.
+- Checked = the compiler forces you to handle it (example: IOException).
+- Unchecked = usually a bug (example: NullPointerException).
+- Stack trace: the TOP line says WHAT broke. The first line with YOUR package name says WHERE.
+
+try {
+    int x = Integer.parseInt("abc");
+} catch (NumberFormatException e) {
+    System.out.println("Not a number: " + e.getMessage());
+} finally {
+    System.out.println("Always runs");
+}
+
+====================================
+4. LAMBDAS + STREAMS
+====================================
+- Lambda = a short, unnamed function:  x -> x * 2
+- Stream = a pipeline for processing a list:
+    filter = keep some items
+    map = change each item
+    collect = gather the results
+- Optional = a box that may or may not hold a value (avoids null crashes).
+
+List<Integer> scores = List.of(90, 55, 72, 40);
+
+List<Integer> passing = scores.stream()
+    .filter(s -> s >= 60)          // keep 90, 72
+    .map(s -> s + 5)               // 95, 77
+    .collect(Collectors.toList());
+
+Optional<String> j = names.stream()
+    .filter(n -> n.startsWith("J"))
+    .findFirst();
+String result = j.orElse("none");  // "none" if not found
+
+====================================
+5. COMMON GOTCHAS
+====================================
+- ==  checks SAME OBJECT.  .equals() checks SAME CONTENT.
+  Always use .equals() for Strings.
+- hashCode(): if you override equals(), override hashCode() too.
+  HashMap and HashSet depend on it. VS Code can generate both.
+- Strings can't be changed (immutable). String methods return a NEW String.
+
+String a = new String("hi");
+String b = new String("hi");
+a == b;          // false (different objects)
+a.equals(b);     // true  (same content)
+
+String s = "test";
+s.toUpperCase();       // s is STILL "test"
+s = s.toUpperCase();   // now "TEST"
+
+====================================
+6. SPRING BOOT LAYERS + DEPENDENCY INJECTION
+====================================
+- @RestController = the front door. Receives HTTP requests.
+- @Service = the business logic.
+- @Repository = talks to the database.
+- Dependency injection = Spring creates these objects and hands them
+  to each other through the CONSTRUCTOR. You never write "new".
+
+@Repository
+public interface TicketRepository extends JpaRepository<Ticket, Long> { }
+
+@Service
+public class TicketService {
+    private final TicketRepository repo;
+    public TicketService(TicketRepository repo) { this.repo = repo; }  // injected
+    public List<Ticket> getAll() { return repo.findAll(); }
+}
+
+@RestController
+@RequestMapping("/tickets")
+public class TicketController {
+    private final TicketService service;
+    public TicketController(TicketService service) { this.service = service; }
+
+    @GetMapping
+    public List<Ticket> all() { return service.getAll(); }
+}
+
+FLOW: GET /tickets -> Controller -> Service -> Repository -> database -> JSON back.
+(For the database, Ticket would also be marked @Entity = maps to a table.)
+
+====================================
+7. PROJECT STRUCTURE (src/main/java)
+====================================
+src/main/java is the standard folder layout every Gradle/Maven
+Java project uses, so the build tool knows where everything is.
+
+my-app/
+  build.gradle            = dependencies + plugins (Maven uses pom.xml)
+  settings.gradle         = project name
+  gradlew / gradlew.bat   = Gradle wrapper (runs the right Gradle version)
+  src/
+    main/
+      java/com/vtg/tickets/     = YOUR APP CODE
+      resources/
+        application.properties  = config (port, database URL)
+    test/
+      java/com/vtg/tickets/     = JUNIT TESTS (mirrors main)
+  build/                  = output Gradle creates (Maven: target/)
+
+- Folders under java/ = the package name.
+  File in src/main/java/com/vtg/tickets/ starts with:
+  package com.vtg.tickets;
+
+====================================
+8. GRADLE COMMANDS
+====================================
+(Windows PowerShell: .\gradlew   Mac/Linux: ./gradlew)
+
+./gradlew bootRun   = compile + START the Spring Boot app (http://localhost:8080)
+./gradlew build     = compile + run tests + make a .jar in build/libs/
+./gradlew test      = run tests only (report: build/reports/tests/test/index.html)
+./gradlew clean     = delete the build/ folder (fixes weird build issues)
+./gradlew javadoc   = generate Javadoc HTML (build/docs/javadoc/)
+java -jar build/libs/my-app-0.0.1-SNAPSHOT.jar = run the built app
+
+Maven equivalents (if they use Maven):
+./mvnw spring-boot:run   = bootRun
+./mvnw clean install     = clean build
+./mvnw test              = test
+
+Adding a library (build.gradle):
+dependencies {
+    implementation 'org.springframework.boot:spring-boot-starter-web'
+    testImplementation 'org.springframework.boot:spring-boot-starter-test'
+}
+
+====================================
+9. JAVADOC
+====================================
+- Special comments /** ... */ above classes and methods.
+- Tags: @param (input), @return (output), @throws (errors).
+- VS Code shows them when you hover over a method.
+- Generate HTML docs: ./gradlew javadoc
+
+/**
+ * Finds a ticket by its ID.
+ *
+ * @param id the ticket ID
+ * @return the matching ticket
+ * @throws TicketNotFoundException if no ticket has that ID
+ */
+public Ticket findById(Long id) { ... }
+
+====================================
+10. OTHER JAVA STUFF TO KNOW
+====================================
+- JDK = tools to BUILD Java (javac compiler).
+  JRE = what RUNS Java. JVM = the engine inside that runs it.
+  Check version: java -version
+- Flow: .java file -> compiled to .class (bytecode) -> packaged in a .jar
+- Entry point: the class with @SpringBootApplication and
+  SpringApplication.run(App.class, args);
+- application.properties = settings. Profiles (dev/prod) switch settings:
+  application-dev.properties
+- Logging: use log.info("...") (SLF4J), NOT System.out.println.
+- Lombok: @Getter @Setter @Data auto-write boilerplate code.
+  Very common in govcon codebases.
+- Annotations (@Override, @Service, @GetMapping) = labels that tell
+  Java/Spring how to treat the code.
+- Records (Java 16+) = short data classes:
+  public record TicketDto(Long id, String title) {}
+
+====================================
+11. BUILD, COMPILE, RUN, TEST (STEP BY STEP)
+====================================
+COMPILE = turn .java code into .class files the JVM can run.
+BUILD   = compile + run tests + package into a .jar.
+RUN     = start the program.
+TEST    = run the JUnit tests to check the code works.
+
+A) PLAIN JAVA (no build tool, good to understand)
+javac Hello.java      = compile -> creates Hello.class
+java Hello            = run it
+java Hello.java       = compile + run one file in one step (Java 11+)
+
+B) GRADLE PROJECT (Spring Boot)
+1. Open the folder that has build.gradle in VS Code
+2. Check Java version:        java -version
+3. Build everything:          ./gradlew build
+   (if any test fails, the build fails)
+   Skip tests (only if needed): ./gradlew build -x test
+4. Start the app:             ./gradlew bootRun
+   Open http://localhost:8080 in a browser. Stop with Ctrl+C
+5. Run all tests:             ./gradlew test
+   Run ONE test class:
+   ./gradlew test --tests "com.vtg.tickets.TicketServiceTest"
+   Test report: build/reports/tests/test/index.html
+6. Run the built jar:         java -jar build/libs/my-app-0.0.1-SNAPSHOT.jar
+7. Fresh start if weird:      ./gradlew clean build
+
+C) MAVEN PROJECT (if they use pom.xml)
+./mvnw compile                    = compile only
+./mvnw test                       = run all tests
+./mvnw test -Dtest=TicketServiceTest = run one test class
+./mvnw package                    = build the .jar (in target/)
+./mvnw package -DskipTests        = build without tests
+./mvnw spring-boot:run            = start the app
+./mvnw clean install              = fresh full build
+
+D) IN VS CODE
+- "Run | Debug" links appear above the main() method. Click to start.
+- Testing panel (beaker icon on the left): run or debug single tests.
+  Green check = pass, red X = fail.
+- Gradle / Maven panel in the sidebar lists tasks you can click.
+- Spring Boot Dashboard: start/stop Spring apps with one click.
+
+E) SIMPLE JUNIT 5 TEST
+(file: src/test/java/com/vtg/tickets/TicketTest.java)
+
+import org.junit.jupiter.api.Test;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
+class TicketTest {
+    @Test
+    void newTicketKeepsTitle() {
+        Ticket t = new Ticket("Login fails");
+        assertEquals("Login fails", t.getTitle());
+    }
+}
+
+F) COMMON ERRORS + FIXES
+- "cannot find symbol"      = typo, or missing import
+- "BUILD FAILED"            = scroll UP to the FIRST error, fix that one
+- "Port 8080 already in use" = app already running. Stop it, or set
+                              server.port=8081 in application.properties
+- Wrong Java version / "JAVA_HOME not set" = install the JDK version
+                              the project needs and point JAVA_HOME to it
+- Tests pass locally but fail in Jenkins = check for different Java
+                              version, missing config, or test order issues
+
+====================================
+12. WHAT "ENTERPRISE" MEANS
+====================================
+- Enterprise = a large organization (a big company or a government agency).
+- Enterprise software = the big systems that run that organization:
+  many users, lots of data, connects to many other systems,
+  must be secure, reliable, and up all the time.
+- In job posts, "enterprise-scale applications" = large, multi-team,
+  production systems. Not small personal projects.
+- "Enterprise Java" = Java used for these big systems
+  (Spring Boot, Jakarta EE, formerly called Java EE / J2EE).
+- In govcon, "the enterprise" often means the agency's whole IT
+  environment (example: "enterprise IT support").
+
+Example:
+  Personal project = a to-do app on your laptop.
+  Enterprise app   = an agency ticketing system used by 20,000 people,
+                     with PKI/LDAP login, audit logs, backups,
+                     and 24/7 uptime.
+
+====================================
+13. LIST vs DICTIONARY vs TUPLE (Python, with Java equivalents)
+====================================
+MEMORY TRICK:
+  List       = a shopping list   (add items, cross items off)
+  Dictionary = a real dictionary (look up a WORD -> get its MEANING)
+  Tuple      = a locked box      (set once, never changes)
+
+QUICK COMPARE:
+                 LIST          DICTIONARY          TUPLE
+  Brackets       [ ]           { key: value }      ( )
+  In order?      Yes           Yes                 Yes
+  Can change?    YES           YES                 NO (locked)
+  Duplicates?    Yes           Keys NO, values yes Yes
+  Get item by    position [0]  key ["login"]       position [0]
+
+---------- LIST ----------
+Ordered collection you can change.
+
+names = ["Kevin", "Jim", "Kevin"]
+names.append("Mary")     # add -> ["Kevin", "Jim", "Kevin", "Mary"]
+names.remove("Jim")      # remove
+names[0]                 # "Kevin" (first item = position 0)
+len(names)               # how many items
+
+USE WHEN: you have a group of items in order and you'll add,
+remove, or loop through them.
+Example: a list of file names to process, a list of CSV rows.
+
+---------- DICTIONARY ----------
+Key -> value pairs. Look things up by a name or ID.
+
+bugs = {"login": 3, "search": 1}
+bugs["login"]            # 3
+bugs["export"] = 2       # add a new key
+bugs["login"] = 4        # update a value
+"search" in bugs         # True (check if key exists)
+for key, value in bugs.items():
+    print(key, value)
+
+USE WHEN: you need to find something by a label or ID fast.
+Example: one CSV/JSON row  {"id": 7, "name": "Kevin", "dept": "IT"},
+settings  {"host": "localhost", "port": 8080}.
+
+---------- TUPLE ----------
+Like a list, but LOCKED. Cannot add, remove, or change items.
+
+point = (39.32, -77.74)          # latitude, longitude
+server = ("localhost", 8080)
+server[1]                        # 8080
+host, port = server              # "unpack" into two variables
+# server[1] = 9090  -> ERROR, tuples can't change
+
+USE WHEN: a small, fixed group of values that belong together
+and should never change.
+Example: coordinates, (name, port), a row returned from a database,
+returning 2 values from a function:  return total, count
+
+---------- IN DATA ENGINEERING (ETL) ----------
+- A LIST of DICTIONARIES = the most common shape for data:
+  rows = [
+      {"id": 1, "name": "Kevin"},
+      {"id": 2, "name": "Jim"},
+  ]
+  (csv.DictReader and JSON give you this)
+- Database queries often return a LIST of TUPLES:
+  [(1, "Kevin"), (2, "Jim")]
+
+---------- JAVA EQUIVALENTS ----------
+  Python list       = Java List / ArrayList
+  Python dictionary = Java Map / HashMap
+  Python tuple      = no built-in tuple in Java. Use a record:
+                      record Server(String host, int port) {}
+                      or an unchangeable list: List.of("a", "b")
+
+====================================
+VS CODE DEBUGGING
+====================================
+- Click left of a line number = red dot breakpoint.
+- Press F5 = run in debug mode.
+- Step through the code and watch the variables.
+
+====================================
+DAY-ONE EDGE
+====================================
+- Ask for a walkthrough of the codebase.
+- Get the app running locally.
+- Take small bug tickets first.
+- Write a test that reproduces each bug BEFORE fixing it (your tester strength).
