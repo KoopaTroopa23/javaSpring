@@ -26,7 +26,7 @@ public class Calculator {
      * Greets the user and adds the two numbers
      ** 
      * @param a the first number to add
-     * @param b b the second number to add
+     * @param b the second number to add
      * @return the greeting followed by "Result" and the sum of a and b
      */
 
