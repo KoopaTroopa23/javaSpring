@@ -5,6 +5,7 @@ import org.springframework.stereotype.Service;
 // @Service marks this as a Spring-managed bean (like @Component,
 // but signals "this holds business logic" by convention)
 @Service
+
 public class Calculator {
 
     // final = this field can only be set once, in the constructor,
@@ -20,6 +21,14 @@ public class Calculator {
     public int add(int a, int b) {
         return a + b; // pure logic, no dependency on anything else — easy to test directly
     }
+
+    /**
+     * Greets the user and adds the two numbers
+     ** 
+     * @param a the first number to add
+     * @param b b the second number to add
+     * @return the greeting followed by "Result" and the sum of a and b
+     */
 
     public String greetAndAdd(int a, int b) {
         // calls the injected Greeter's method, then calls add() on itself,

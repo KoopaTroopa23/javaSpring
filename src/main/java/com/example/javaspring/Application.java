@@ -10,4 +10,11 @@ public class Application {
 		SpringApplication.run(Application.class, args);
 	}
 
+	public void run (String[] args) {
+		System.out.println("Hello World");
+		
+	}
+
+
 }
+
