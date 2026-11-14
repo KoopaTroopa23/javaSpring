@@ -21,9 +21,9 @@ The owner is learning Java and Spring Boot to start a Java software engineer job
 
 Docker is a possible follow-up after course 2 (an earlier session worked on Docker for `springboot-gradle-timb`).
 
-## Known setup issues (delete a line once fixed)
-- `src/test/java/com/example/javaspring/Task.java` is a JPA entity in the test folder. Entities belong in `src/main/java/...`.
-- `settings.gradle` has `rootProject.name = 'javaSpring.api'`; the intended name is `javaSpring` (a dot in a Gradle project name can cause problems).
+## Notes
+- `Task` (JPA entity) lives in `src/main/java/com/example/javaspring/`. It has no getters/setters yet; the owner adds them (Lombok `@Getter @Setter` or by hand) while following course 2.
+- Gradle project name is `javaSpring` (no dot).
 
 ## Verifying builds in the cloud sandbox
 Maven Central can return HTTP 429 there. Resolve dependencies through Google's Maven Central mirror with a throwaway Gradle init script kept outside the repo; do not commit it.
