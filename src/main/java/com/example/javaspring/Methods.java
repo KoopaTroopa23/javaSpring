@@ -63,7 +63,7 @@ public class Methods {
         return a + b;
     }
 
-    public static String  wordAndNumber(String name, int a, int b) {
+    public static String  wordAndNumber(String name, int a, int b) {   //  Method with String return and calling add method
         return "Hi there " + name + " " + add(a,b);
     }
 
