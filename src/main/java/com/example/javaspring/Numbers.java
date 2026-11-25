@@ -12,6 +12,11 @@ public class Numbers {
         System.out.println(5 * 5 / 13); // multiplication and division modulus come before addition and subtraction
         System.out.println(5.0 / 2.5); // this is a double division, not an integer division
         System.out.println((5 - 2) * 3); // brackets are used to change the order of operations
+        System.out.println("Calling -- Overloaded Mehtod --");
+        System.out.println(Methods.add(1, 2));  //  called add method from Methods.java
+        System.out.println("Calling -- sayHelloWordTen from Method.java --");
+        Methods.sayHelloWorldTen(5);      // called Say Hello world from Methods.java
+
 
        
         // How many seconds in a day
@@ -43,7 +48,7 @@ public class Numbers {
         System.out.printf("5 * 2 = %d%n", 5 * 2);     // not to hardcode answer use printf
         System.out.printf("3 * 5 = %d%n", 3 * 5);     // %d a placeholder for an integer value
                                                       // %n not a placeholder at all. It inserts a new line
-        System.out.printf("Print %s", "Test");     //  %s a placeholder for a string
+        System.out.printf("Print %s%n", "Test");     //  %s a placeholder for a string
 
         
 
@@ -58,8 +63,8 @@ public class Numbers {
                // println is method
                // Declaration  int j
                // each line is a statement.  some statements might have expresssions
-        
                
+       
     
 
 
