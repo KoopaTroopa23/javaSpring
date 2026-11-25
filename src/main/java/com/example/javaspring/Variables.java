@@ -1,4 +1,4 @@
-package com.example;
+package com.example.javaspring;
 
 public class Variables {
     public static void main(String[] args) {
@@ -8,14 +8,14 @@ public class Variables {
         byte b = 1;
         short s = 128;
         long l = 22222222;
-        float f = 4.0f;
+        float f = 4.2f;
         char c = 'a';
         boolean p = true;
 
 
-        System.out.println((a + i + d + b + s + l + f + c) + " and " + p);
+            System.out.println((a + i + d + b + s + l + f + c) + " and " + p);     // string concatematoion
 
 
-        
+        System.out.println(f + s);
     }
 }

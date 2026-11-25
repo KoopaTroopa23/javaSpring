@@ -57,6 +57,7 @@ public class Numbers {
                // 3.0 (floating point number) 3 (integer) 3.0f (float) 3.0d (double)
                // println is method
                // Declaration  int j
+               // each line is a statement.  some statements might have expresssions
         
                
     
