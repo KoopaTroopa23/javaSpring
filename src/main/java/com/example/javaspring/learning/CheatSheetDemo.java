@@ -1,4 +1,4 @@
-package com.example.javaspring;
+package com.example.javaspring.learning;
 
 import java.io.IOException;
 import java.nio.file.Files;

@@ -1,4 +1,6 @@
-package com.example.javaspring;
+package com.example.javaspring.controllers;
+
+import com.example.javaspring.Calculator;
 
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;

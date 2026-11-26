@@ -1,4 +1,4 @@
-package com.example.javaspring;
+package com.example.javaspring.learning;
 
 import org.aspectj.weaver.loadtime.definition.Definition.DeclareAnnotation;
 

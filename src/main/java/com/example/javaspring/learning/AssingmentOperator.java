@@ -1,4 +1,4 @@
-package com.example.javaspring;
+package com.example.javaspring.learning;
 
 public class AssingmentOperator {
     public static void main(String[] args) {
